@@ -1,0 +1,34 @@
+{
+  "name": "rpgmaker-plugin-conflict-finder",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin": "cli.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./build.js --start-js=./cli.js --app-name=conflict-finder --compress ./.env.example"
+  },
+  "keywords": [
+    "RPG Maker"
+  ],
+  "author": "moonyoulove",
+  "license": "MIT",
+  "description": "Find conflicts between RPG Maker MV/MZ plugins.",
+  "dependencies": {
+    "acorn": "^8.11.3",
+    "blessed": "^0.1.81",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "esquery": "github:moonyoulove/esquery-revised",
+    "open-editor": "^4.1.1",
+    "os-locale": "^6.0.2",
+    "press-any-key": "^1.0.0"
+  },
+  "devDependencies": {
+    "adm-zip": "^0.5.14",
+    "esbuild": "^0.21.5",
+    "ora": "^8.0.1",
+    "postject": "^1.0.0-alpha.6",
+    "shelljs": "^0.8.5"
+  }
+}
