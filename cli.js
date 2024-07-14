@@ -15,17 +15,21 @@ program
     .parse();
 const options = program.opts();
 const themeColor = options.theme || process.env.COLOR || "cyan";
-const { screen, prompt, loading } = createBlessed();
+const { screen, prompt, loading: message } = createBlessed();
 start();
 
 async function start() {
     const projectPath = options.project || await askProjectPath();
     if (projectPath) {
         const conflicts = await findConflictPromise(projectPath);
-        const output = new ConflictOutput(conflicts, projectPath, options.unicode, themeColor, options.editor);
-        output.show();
+        if (conflicts.length > 0) {
+            const output = new ConflictOutput(conflicts, projectPath, options.unicode, themeColor, options.editor);
+            output.show();
+        } else {
+            showMessage("No conflict found", true);
+        }
     } else {
-        process.exit(0);
+        showMessage("Project path not found", true);
     }
 }
 
@@ -53,7 +57,7 @@ function createBlessed() {
         hidden: true,
     });
     screen.append(prompt);
-    const loading = blessed.text({
+    const message = blessed.text({
         hidden: true,
         width: "shrink",
         height: "shrink",
@@ -62,15 +66,14 @@ function createBlessed() {
         border: {
             type: "line",
         },
-        content: "Finding conflicts...",
         focusEffects: {
             border: {
                 fg: themeColor,
             },
         },
     });
-    screen.append(loading);
-    return { screen, prompt, loading };
+    screen.append(message);
+    return { screen, prompt, loading: message };
 }
 
 function askProjectPath() {
@@ -102,15 +105,27 @@ function placeHolderText() {
 }
 
 async function findConflictPromise(projectPath) {
-    screen.saveFocus();
-    loading.show();
-    loading.focus();
+    showMessage("Finding conflicts...");
     return new Promise(resolve => {
         setTimeout(() => {
             const conflicts = findConflict(projectPath);
-            loading.hide();
-            screen.restoreFocus();
+            hideMessage();
             resolve(conflicts);
         }, 10);
     });
+}
+
+function showMessage(text, pressToExit = false) {
+    screen.saveFocus();
+    message.setContent(text);
+    message.show();
+    message.focus();
+    if (pressToExit) {
+        message.once("keypress", () => process.exit(0));
+    }
+}
+
+function hideMessage() {
+    message.hide();
+    screen.restoreFocus();
 }
